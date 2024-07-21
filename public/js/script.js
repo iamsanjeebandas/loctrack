@@ -28,6 +28,7 @@ window.addEventListener("load", async () => {
 // Initialize the leaflet map variable
 let map;
 const markers = {};
+const polylines = {};
 const userList = document.getElementById("user-list");
 let currentPosition = null;
 let positionUpdateInterval = null;
@@ -103,7 +104,20 @@ socket.on("receive-location", (data) => {
     markers[id] = L.marker([latitude, longitude])
       .addTo(map)
       .bindPopup(`User: ${id}`);
+
+    // Create a new polyline for the user
+    polylines[id] = L.polyline([[latitude, longitude]], {
+      color: "blue",
+    }).addTo(map);
   }
+
+  // Update the polyline with the new location
+  if (polylines[id]) {
+    const latlngs = polylines[id].getLatLngs();
+    latlngs.push([latitude, longitude]);
+    polylines[id].setLatLngs(latlngs);
+  }
+
   // Optionally center the map on the first received location
   if (Object.keys(markers).length === 1) {
     map.setView([latitude, longitude], 16);
@@ -115,6 +129,10 @@ socket.on("user-disconnected", (id) => {
   if (markers[id]) {
     map.removeLayer(markers[id]);
     delete markers[id];
+  }
+  if (polylines[id]) {
+    map.removeLayer(polylines[id]);
+    delete polylines[id];
   }
 });
 

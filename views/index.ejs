@@ -12,6 +12,13 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.css"
+      integrity="sha512-QxEb9ufclE66DwMF3ae1BObqJcE8pY6yIHnMRSpk4iL0JRSQmD4V5tM4Lk9OFaH5k/rRfNNC5C6qlO6A1u40wA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <script
       async
       crossorigin="anonymous"
@@ -21,9 +28,9 @@
     ></script>
   </head>
   <body>
-    <div id="loading">Loading, please wait...</div>
-    <div id="map" style="display: none"></div>
-    <div id="user-list" style="display: none">
+    <div id="map"></div>
+    <div id="user-list">
+      <h3>Users</h3>
       <ul>
         <li>Loading users...</li>
       </ul>
@@ -37,6 +44,11 @@
     <script
       src="https://cdn.socket.io/4.7.5/socket.io.min.js"
       integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"
+      integrity="sha512-WZQQZWjJqM+1M0BzMym0hJ2nCKnlhDN3z/y0mIMJylV62Gd4Yz0Q/eFntq1V91YBqVub/mka4AqVrM3EPOA2aA=="
       crossorigin="anonymous"
     ></script>
     <script src="/js/script.js"></script>

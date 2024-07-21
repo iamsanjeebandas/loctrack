@@ -1,37 +1,54 @@
-const express = require("express");
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+const path = require('path');
+
+// Initialize the Express app and HTTP server
 const app = express();
-const http = require("http");
-const path = require("path");
-const socketio = require("socket.io");
 const server = http.createServer(app);
-const io = socketio(server);
+const io = socketIo(server);
 
-app.set("view engine", "ejs");
-app.use(express.static(path.join(__dirname, "public")));
+// Set up EJS as the templating engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
-let users = {};
+// Middleware to serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
-io.on("connection", function (socket) {
-  socket.on("send-location", function (data) {
-    users[socket.id] = { ...data };
-    io.emit("receive-location", { id: socket.id, ...data });
-    io.emit("update-user-list", Object.keys(users));
+// Middleware for parsing JSON requests
+app.use(express.json());
 
-    const message = `Check out my location on LocTrack!`;
-    io.emit("share-location", { id: socket.id, ...data, message });
-  });
-  socket.on("disconnect", function () {
-    delete users[socket.id];
-    io.emit("user-disconnected", socket.id);
-    io.emit("update-user-list", Object.keys(users));
-  });
-  console.log("connection successful");
-});
-app.get("/", function (req, res) {
-  res.render("index");
+// Serve the index.ejs file for the main route
+app.get('/', (req, res) => {
+  res.render('index'); // Renders index.ejs
 });
 
-const port = process.env.PORT || 5000;
-server.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+// Handle real-time communication with Socket.IO
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+
+  // Handle location sharing
+  socket.on('send-location', (data) => {
+    // Broadcast location to all clients
+    socket.broadcast.emit('receive-location', {
+      id: socket.id,
+      ...data,
+    });
+    console.log(`Location received from ${socket.id}:`, data);
+  });
+
+  // Handle disconnection
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+    socket.broadcast.emit('user-disconnected', socket.id);
+  });
+
+  // Update user list
+  io.emit('update-user-list', Array.from(io.sockets.sockets.keys()));
+});
+
+// Start the server on port 5000
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

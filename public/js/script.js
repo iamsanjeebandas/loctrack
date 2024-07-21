@@ -1,6 +1,31 @@
 const socket = io();
 
-//checking if the browser contains the geolocation functionality or not
+// Function to initialize Clerk
+const initializeClerk = async () => {
+  try {
+    await window.Clerk.load();
+    const user = window.Clerk.user;
+
+    if (!user) {
+      window.Clerk.redirectToSignIn();
+    } else {
+      console.log("User authenticated", user);
+    }
+  } catch (error) {
+    console.error("Clerk authentication error:", error);
+  }
+};
+
+// Ensure Clerk is initialized before using it
+window.addEventListener("load", async () => {
+  if (window.Clerk) {
+    await initializeClerk();
+  } else {
+    console.error("Clerk is not available.");
+  }
+});
+
+// Geolocation functionality
 if (navigator.geolocation) {
   navigator.geolocation.watchPosition(
     (position) => {
@@ -18,13 +43,14 @@ if (navigator.geolocation) {
   );
 }
 
-//initialise the leaflet map
+// Initialize the leaflet map
 const map = L.map("map").setView([0, 0], 16);
-L.tileLayer("https://{s}.tile.openstreetmap.org./{z}/{x}/{y}.png", {
-  attribution: "Sanjeeban Das",
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "LocTrack",
 }).addTo(map);
 
 const markers = {};
+const userList = document.getElementById("user-list");
 
 socket.on("receive-location", (data) => {
   const { id, latitude, longitude } = data;
@@ -41,4 +67,15 @@ socket.on("user-disconnected", (id) => {
     map.removeLayer(markers[id]);
     delete markers[id];
   }
+});
+
+socket.on("update-user-list", (userIds) => {
+  userList.innerHTML = userIds.map((id) => `<li>${id}</li>`).join("");
+});
+
+socket.on("share-location", (data) => {
+  const { id, latitude, longitude, message } = data;
+  const link = `https://loctrack-webapp.onrender.com?latitude=${latitude}&longitude=${longitude}`;
+  const shareMessage = `${message}\n${link}`;
+  console.log(`Share message: ${shareMessage}`);
 });

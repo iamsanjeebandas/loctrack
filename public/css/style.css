@@ -1,42 +1,49 @@
-/* style.css */
+/* Ensure full height for the body */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
 
-/* Ensure the map container is responsive and properly sized */
+/* Container to hold both map and user list */
+.container {
+  display: flex;
+  height: 100vh; /* Full viewport height */
+}
+
+/* Style for the map */
 #map {
-  height: 75vh; /* 75% of the viewport height */
-  width: 75vw; /* 75% of the viewport width */
-  margin: 0 auto; /* Center the map horizontally */
+  flex: 1; /* Map takes up remaining space */
+  height: 100%;
+  z-index: 0; /* Ensure map is below other elements */
 }
 
-/* Style the user list */
+/* Style for the user list */
 #user-list {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 300px;
-  background: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
-  border-radius: 8px; /* Rounded corners */
-  padding: 10px; /* Padding inside the container */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+  width: 250px; /* Fixed width for the user list */
+  background-color: #f4f4f4; /* Background color */
+  border-left: 2px solid #ddd; /* Border for separation */
+  padding: 10px;
+  overflow-y: auto; /* Enable scrolling if list is long */
+  height: 100%; /* Full height */
+  position: relative;
+  z-index: 1; /* Ensure user list is above map */
 }
 
-/* Style the user list heading */
-#user-list h3 {
-  margin: 0 0 10px 0; /* Margin for spacing below the heading */
-  font-size: 1.2em; /* Larger font size for the heading */
-}
-
-/* Style each list item */
+/* Style for list items */
 #user-list ul {
-  list-style-type: none; /* Remove default list styling */
-  padding: 0; /* Remove default padding */
-  margin: 0; /* Remove default margin */
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 #user-list li {
-  padding: 5px 0; /* Padding for each list item */
-  border-bottom: 1px solid #ddd; /* Border between items */
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
 }
 
 #user-list li:last-child {
-  border-bottom: none; /* Remove the border for the last item */
+  border-bottom: none;
 }

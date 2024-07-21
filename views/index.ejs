@@ -21,12 +21,19 @@
     ></script>
   </head>
   <body>
-    <div id="settings-menu">
-      <!-- Custom settings button if needed -->
-      <button onclick="showSettings()">Settings</button>
-    </div>
-    <div class="main-container">
-      <div id="map"></div>
+    <div class="container">
+      <div class="map-container">
+        <div id="map"></div>
+        <div class="clerk-settings">
+          <script>
+            window.addEventListener("load", () => {
+              if (window.Clerk) {
+                window.Clerk.mountSignIn();
+              }
+            });
+          </script>
+        </div>
+      </div>
       <div id="user-list">
         <ul>
           <li>Loading users......</li>

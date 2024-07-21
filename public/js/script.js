@@ -28,25 +28,38 @@ window.addEventListener("load", async () => {
 // Initialize the leaflet map variable
 let map;
 const markers = {};
-const lines = {}; // To store lines between users
 const userList = document.getElementById("user-list");
+let currentPosition = null;
+let positionUpdateInterval = null;
 
 // Function to handle geolocation success
 const onGeolocationSuccess = (position) => {
   const { latitude, longitude } = position.coords;
 
   // Initialize the map with the user's location
-  map = L.map("map").setView([latitude, longitude], 16);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "LocTrack",
-  }).addTo(map);
+  if (!map) {
+    map = L.map("map").setView([latitude, longitude], 16);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "LocTrack",
+    }).addTo(map);
+  }
 
   // Place a marker for the current user
   if (!markers["current"]) {
     markers["current"] = L.marker([latitude, longitude])
       .addTo(map)
       .bindPopup("You are here");
+  } else {
+    markers["current"].setLatLng([latitude, longitude]);
   }
+
+  currentPosition = { latitude, longitude };
+
+  // Start or restart updating the location periodically
+  if (positionUpdateInterval) {
+    clearInterval(positionUpdateInterval);
+  }
+  positionUpdateInterval = setInterval(updateLocation, 5000);
 };
 
 // Function to handle geolocation error
@@ -54,10 +67,20 @@ const onGeolocationError = (error) => {
   console.error("Geolocation error:", error);
 };
 
+// Function to update location periodically
+const updateLocation = () => {
+  if (currentPosition) {
+    // Update the server with the user's current location
+    socket.emit("send-location", currentPosition);
+  }
+};
+
 // Check if geolocation is available and get the current position
 if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(
-    onGeolocationSuccess,
+  navigator.geolocation.watchPosition(
+    (position) => {
+      onGeolocationSuccess(position); // Update location on each change
+    },
     onGeolocationError,
     {
       enableHighAccuracy: true,
@@ -74,8 +97,6 @@ socket.on("receive-location", (data) => {
   if (!map) return; // Ensure map is initialized before handling location updates
 
   const { id, latitude, longitude } = data;
-
-  // Add or update the marker for the user
   if (markers[id]) {
     markers[id].setLatLng([latitude, longitude]);
   } else {
@@ -83,22 +104,9 @@ socket.on("receive-location", (data) => {
       .addTo(map)
       .bindPopup(`User: ${id}`);
   }
-
-  // Draw a line between the current user and the newly added user
-  if (Object.keys(markers).length > 1) {
-    const userIds = Object.keys(markers);
-    userIds.forEach((userId) => {
-      if (userId !== id) {
-        const start = markers[userId].getLatLng();
-        const end = markers[id].getLatLng();
-
-        if (lines[userId]) {
-          map.removeLayer(lines[userId]);
-        }
-
-        lines[userId] = L.polyline([start, end], { color: "blue" }).addTo(map);
-      }
-    });
+  // Optionally center the map on the first received location
+  if (Object.keys(markers).length === 1) {
+    map.setView([latitude, longitude], 16);
   }
 });
 
@@ -108,13 +116,6 @@ socket.on("user-disconnected", (id) => {
     map.removeLayer(markers[id]);
     delete markers[id];
   }
-  // Remove lines connected to the disconnected user
-  Object.keys(lines).forEach((lineId) => {
-    if (lineId === id) {
-      map.removeLayer(lines[lineId]);
-      delete lines[lineId];
-    }
-  });
 });
 
 // Update user list

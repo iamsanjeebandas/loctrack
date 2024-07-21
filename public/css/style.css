@@ -7,26 +7,43 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/* Main container to hold both map and user list */
-.main-container {
+/* Container to hold both map and user list */
+.container {
   display: flex;
   height: 100vh; /* Full viewport height */
 }
 
+/* Map container with position relative */
+.map-container {
+  position: relative;
+  flex: 1; /* Map takes up remaining space */
+  height: 100%;
+}
+
 /* Style for the map */
 #map {
-  flex: 3; /* Map takes up 3/4 of the space */
   height: 100%;
+  width: 100%;
+}
+
+/* Style for the Clerk settings button */
+.clerk-settings {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1000; /* Ensure it is above the map */
 }
 
 /* Style for the user list */
 #user-list {
-  flex: 1; /* User list takes up 1/4 of the space */
+  width: 250px; /* Fixed width for the user list */
   background-color: #f4f4f4; /* Background color */
   border-left: 2px solid #ddd; /* Border for separation */
   padding: 10px;
   overflow-y: auto; /* Enable scrolling if list is long */
   height: 100%; /* Full height */
+  position: relative;
+  z-index: 1; /* Ensure user list is above map */
 }
 
 /* Style for list items */
@@ -43,25 +60,4 @@ body {
 
 #user-list li:last-child {
   border-bottom: none;
-}
-
-/* Custom settings button */
-#settings-menu {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 2;
-}
-
-#settings-menu button {
-  padding: 8px 16px;
-  border: none;
-  background-color: #222d52;
-  color: #fff;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-#settings-menu button:hover {
-  background-color: #1a1a1a;
 }

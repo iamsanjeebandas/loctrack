@@ -28,6 +28,7 @@ window.addEventListener("load", async () => {
 // Initialize the leaflet map variable
 let map;
 const markers = {};
+const lines = {}; // To store lines between users
 const userList = document.getElementById("user-list");
 
 // Function to handle geolocation success
@@ -73,6 +74,8 @@ socket.on("receive-location", (data) => {
   if (!map) return; // Ensure map is initialized before handling location updates
 
   const { id, latitude, longitude } = data;
+
+  // Add or update the marker for the user
   if (markers[id]) {
     markers[id].setLatLng([latitude, longitude]);
   } else {
@@ -80,9 +83,22 @@ socket.on("receive-location", (data) => {
       .addTo(map)
       .bindPopup(`User: ${id}`);
   }
-  // Optionally center the map on the first received location
-  if (Object.keys(markers).length === 1) {
-    map.setView([latitude, longitude], 16);
+
+  // Draw a line between the current user and the newly added user
+  if (Object.keys(markers).length > 1) {
+    const userIds = Object.keys(markers);
+    userIds.forEach((userId) => {
+      if (userId !== id) {
+        const start = markers[userId].getLatLng();
+        const end = markers[id].getLatLng();
+
+        if (lines[userId]) {
+          map.removeLayer(lines[userId]);
+        }
+
+        lines[userId] = L.polyline([start, end], { color: "blue" }).addTo(map);
+      }
+    });
   }
 });
 
@@ -92,6 +108,13 @@ socket.on("user-disconnected", (id) => {
     map.removeLayer(markers[id]);
     delete markers[id];
   }
+  // Remove lines connected to the disconnected user
+  Object.keys(lines).forEach((lineId) => {
+    if (lineId === id) {
+      map.removeLayer(lines[lineId]);
+      delete lines[lineId];
+    }
+  });
 });
 
 // Update user list

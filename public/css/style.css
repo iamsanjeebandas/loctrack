@@ -7,29 +7,26 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/* Container to hold both map and user list */
-.container {
+/* Main container to hold both map and user list */
+.main-container {
   display: flex;
   height: 100vh; /* Full viewport height */
 }
 
 /* Style for the map */
 #map {
-  flex: 1; /* Map takes up remaining space */
+  flex: 3; /* Map takes up 3/4 of the space */
   height: 100%;
-  z-index: 0; /* Ensure map is below other elements */
 }
 
 /* Style for the user list */
 #user-list {
-  width: 250px; /* Fixed width for the user list */
+  flex: 1; /* User list takes up 1/4 of the space */
   background-color: #f4f4f4; /* Background color */
   border-left: 2px solid #ddd; /* Border for separation */
   padding: 10px;
   overflow-y: auto; /* Enable scrolling if list is long */
   height: 100%; /* Full height */
-  position: relative;
-  z-index: 1; /* Ensure user list is above map */
 }
 
 /* Style for list items */
@@ -46,4 +43,25 @@ body {
 
 #user-list li:last-child {
   border-bottom: none;
+}
+
+/* Custom settings button */
+#settings-menu {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+}
+
+#settings-menu button {
+  padding: 8px 16px;
+  border: none;
+  background-color: #222d52;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#settings-menu button:hover {
+  background-color: #1a1a1a;
 }

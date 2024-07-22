@@ -26,12 +26,33 @@ body {
   width: 100%;
 }
 
-/* Style for the Clerk settings button */
-.clerk-settings {
+/* Style for tracking controls */
+#tracking-controls {
   position: absolute;
   top: 10px;
   left: 10px;
   z-index: 1000; /* Ensure it is above the map */
+  background-color: white; /* Background color */
+  padding: 10px; /* Padding around the controls */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Shadow for better visibility */
+}
+
+/* Style for the track button */
+.track-button {
+  display: block;
+  margin-bottom: 10px;
+  padding: 10px 20px;
+  background-color: #222d52; /* Button color */
+  color: white; /* Button text color */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.track-button:hover {
+  background-color: #1a1f3e; /* Darker shade on hover */
 }
 
 /* Style for the user list */

@@ -51,6 +51,9 @@ io.on("connection", (socket) => {
 
     // Notify the target user that they are being tracked
     io.to(targetId).emit("tracking-request", { trackerId: socket.id });
+
+    // Send success response back to the requesting user
+    socket.emit("tracking-request-response", { success: true });
   });
 
   // Handle tracking updates

@@ -132,6 +132,15 @@ socket.on("update-user-list", (userIds) => {
 const trackUser = (id) => {
   // Emit tracking request to server
   socket.emit("track-user", id);
+
+  // Provide user feedback
+  socket.once("tracking-request-response", (response) => {
+    if (response.success) {
+      alert(`Successfully started tracking user ${id}`);
+    } else {
+      alert(`Failed to start tracking user ${id}: ${response.message}`);
+    }
+  });
 };
 
 // Handle tracking updates
@@ -150,12 +159,4 @@ socket.on("receive-tracking-update", (data) => {
     latlngs.push([latitude, longitude]);
     trackingLines[trackerId].setLatLngs(latlngs);
   }
-});
-
-// Share location message
-socket.on("share-location", (data) => {
-  const { id, latitude, longitude, message } = data;
-  const link = `https://your-app-url?latitude=${latitude}&longitude=${longitude}`;
-  const shareMessage = `${message}\n${link}`;
-  console.log(`Share message: ${shareMessage}`);
 });
